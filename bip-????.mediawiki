@@ -44,8 +44,8 @@ a) traditional peer-to-peer network b) self-imposed subdivision of peer-to-peer 
 
 {| class="wikitable"
 |- Bitcoin vs. BlockReduce requirements with increasing block size}
-! rowspan="2" colspan="2" | Characteristic
-! rowspan="2" colspan="2" | Scale Factor
+! rowspan="2" | Characteristic
+! rowspan="2" | Scale Factor
 ! colspan="6" | Block Size (PRIME) (MB)
 |-
 ! 2.5
