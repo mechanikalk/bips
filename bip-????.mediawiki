@@ -42,37 +42,100 @@ Currently, transactions are shared and propagated across most blockchain network
 <img src=bip-%3F%3F%3F%3F/PeerToPeerStructure.png></img>
 a) traditional peer-to-peer network b) self-imposed subdivision of peer-to-peer network.
 
-\begin{table}[ht]
- \caption{Bitcoin vs. BlockReduce requirements with increasing block size}
-  \centering
-  \begin{tabular}{lllllllll}
-    \hline
-    \multirow{2}{*}{Characteristic} &
-    \multirow{2}{*}{Scale Factor} &
-    \multicolumn{6}{c}{Block Size (PRIME) (MB)} \\
-    \cmidrule(l){3-9}
-    && 2.5 & 10 & 20 & 40 & 80 & 160 & 320 \\
-    \hline
-    Transaction per Second (TPS) & N & 10 & 40 & 80 & 160 & 320 & 640 & 1280\\
-    
-    Transactions per Block & N & 10 & 40 & 80 & 160 & 320 & 640 & 1280 \\
-    
-    Storage per year (Gb) & N & 75 & 300 & 600 & 1200 & 2400 & 2800 & 9600 \\
-    
-    Average Bandwidth (kB/s) & N & 250 & 1000 & 2000 & 4000 & 8000 & 160000 & 32000 \\
-    
-    Yearly Traffic (Tb) & N & 7.3 & 29.4 & 58.7 & 117.5 & 235 & 670 & 940 \\
-    
-    BR Average Bandwidth (kb/s) &  k + N/100 & 250 & 760 & 770 & 790 & 830 & 910 & 1070 \\
-    
-    BR Yearly Traffic (Tb) & k + N/100 & 7.3 & 22.3 & 22.6 & 23.2 & 24.4 & 26.7 & 31.4 \\
-    
-    BR Bandwidth Comparison (\%) & n/a & 100\% & 76\% & 38.5\% & 19.8\% & 10.4\% & 5.7\% & 3.3\% \\
-    \hline
-  \end{tabular}
-    \label{tab:table1}
-\end{table}
-
+{| class="wikitable"
+|- Bitcoin vs. BlockReduce requirements with increasing block size}
+! rowspan="2" colspan="2" | Characteristic
+! rowspan="2" colspan="2" | Scale Factor
+! colspan="6" | Block Size (PRIME) (MB)
+|-
+! 2.5
+! 10
+! 20
+! 40
+! 80
+! 160
+! 320
+|-
+| Transaction per Second (TPS)
+| N
+| 10
+| 40
+| 80
+| 160
+| 320
+| 640
+| 1280
+|-
+| Transactions per Block
+| N
+| 10
+| 40
+| 80
+| 160
+| 320
+| 640
+| 1280
+|-
+| Storage per year (Gb)
+| N
+| 75
+| 300
+| 600
+| 1200
+| 2400
+| 2800
+| 9600
+|-
+| Average Bandwidth (kB/s)
+| N
+| 250
+| 1000
+| 2000
+| 4000
+| 8000
+| 160000
+| 32000
+|-
+| Yearly Traffic (Tb)
+| N 
+| 7.3
+| 29.4
+| 58.7
+| 117.5
+| 235
+| 670
+| 940
+|-
+| BR Average Bandwidth (kb/s)
+| k + N/100
+| 250
+| 760
+| 770
+| 790
+| 830
+| 910
+| 1070
+|-
+| BR Yearly Traffic (Tb)
+| k + N/100
+| 7.3
+| 22.3
+| 22.6
+| 23.2
+| 24.4
+| 26.7
+| 31.4
+|-
+| BR Bandwidth Comparison (\%)
+| n/a
+| 100\%
+| 76\%
+| 38.5\%
+| 19.8\%
+| 10.4\%
+| 5.7\%
+| 3.3\%
+|}
 
 Functionally, this means that if a mechanism can be constructed that incentivizes peers to share information with a subset of their peers as blocks of data rather than individual transactions, a significant increase in bandwidth efficiency can be achieved. For example, Figure 2(a) illustrates a traditional peer-to-peer architecture currently used by blockchain systems.  Since each node does not know what transactions have been received by its peers, it must pass every new transaction it receives to each of its peers.  However, if the network is subdivided into sub-groups, as in figure 2(b), the peers would only share the individual transactions with other peers within their sub-group.  Specifically, nodes which self-identify as A would only share single transactions with other nodes which also self-identify as A.  The same would also be true for nodes which self-identify as sub-group B.  At some point, once a set of transactions is consistent within sub-group A, sub-group A would share that set of transactions with sub-group B.  Now that the transactions are built up into larger groups of data, say hundreds or thousands of transactions, nodes can first check if they need to transmit data to their peers by checking a hash.  This enables a significant increase in bandwidth efficiency. Transmitting a hash would only take tens of bytes, but would allow the nodes to determine if they need to transmit several kilobytes of transaction data. The next question that arises is how would nodes self-organize and then how do zones determine when to share data with other zones.  Table 1 shows a comparison on the bandwidth and storage requirements for a Bitcoin style blockchain versus a BlockReduce style blockchain for various block sizes.  The most notable item is that the scale factor for BlockReduce bandwidth is k+N/100, compared to N for Bitcoin.  The large reduction in the BlockReduce bandwidth scale factor is what enables BlockReduce to massively scale.
 
@@ -105,7 +168,7 @@ The transaction location requirement for BlockReduce will incentivize users to s
 In the proposed block structure, a zone block, a region block, and a PRIME block’s data look apparently identical.  This allows for merge-mining to be used to mine zone, region, and PRIME blocks simultaneously.  The characteristic that distinguishes a zone, region, and PRIME block is the level of difficulty achieved when a block is mined.  The difficulty of the zone will be roughly one order of magnitude easier than a region block which will be roughly one order of magnitude easier than a PRIME block.  Consequently, some of the data that is recorded in a zone block is not useful in the canonical record.    
 
 {| class="wikitable"
-|+ A proposed block header structure to implement BlockReduce}
+|+ A proposed block header structure to implement BlockReduce
 |-
 ! Field Size
 ! Name
