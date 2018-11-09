@@ -39,7 +39,7 @@ Previous proposals for scaling blockchain have met some of the requirements prop
 
 Currently, transactions are shared and propagated across most blockchain networks through a gossip protocol. Nodes select an arbitrary number of peers within the network and share newly received transactions with their selected peers. Each transaction that a node receives is broadcast to all peers even if they have already received the transaction.  This creates a large network bandwidth requirement simply for the network to propagate transactions. The inefficiency in bandwidth usage is due to the fact that a transaction has to be transmitted for a node to determine if it is new.  Therefore, if a node already has seen a transaction, the full bandwidth must be expended to determine that the transaction does not need to be transmitted. Transactions must be propagated for the nodes to create a consistent set of transactions to validate and include in the next block.  In Bitcoin, the bandwidth overhead for a node compared to the amount of data actually included in a block is on the order of 100-300x.  This means that for every 1 Mb of data included in a block, a node needs to send and receive 100-300 Mb of data \cite{Group2015}.  The bandwidth overhead requirement can be reduced if information can be grouped into larger sets.  This can allow peers to exchange identifying information for a data set, say a hash or header, before the peers actually have to transfer the entire data set. 
 
-<img src=bip-????/PeerToPeerStructure.png></img>
+<img src=bip-%3F%3F%3F%3F/PeerToPeerStructure.png></img>
 
 \begin{table}[ht]
  \caption{Bitcoin vs. BlockReduce requirements with increasing block size}
