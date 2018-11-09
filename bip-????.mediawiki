@@ -87,48 +87,6 @@ proposed BlockReduce hierarchy, illustrating groups and sub-groups.
 
 The root blockchain of this hierarchy is referred to as PRIME.  All nodes work to validate all transactions included in PRIME.  Additionally, nodes perform work, transaction verification, and data propagation in one of the subsequent levels referred to as regions (A-Z) and one of the subordinate zones (i-k). The lowest level, zones such as i and j, are assumed to be peer-to-peer groups communicating via a gossip protocol.  Therefore, each one can be thought of in terms of size and throughput as a traditional blockchain such as Bitcoin or Ethereum.   We assume that each zone is similar in performance to an Ethereum blockchain, which roughly has 10 second blocks, approximate throughput of 10 transactions per second (TPS), and a basic transaction size of 100 bytes. Based on these assumptions as well as a hierarchy that has 10 regions and 10 zones in each region, a BlockReduce type blockchain would be able to process 1,000 TPS. The PRIME block time will average 1,000 seconds (\textasciitilde17 minutes) and the total chain will require around 8 Tb/year of storage. Most importantly, the amount of bandwidth used to create 1,000 TPS blocks is significantly smaller than that of current blockchains.  Additionally, the structure of blockchains can be dynamically scaled over time by altering the number of valid regions and zones.  The re-sizing of a structure to 70 regions and 70 zones in each region would allow a throughput of at least 50,000 TPS. Moreover, the segmentation of the network into zones will likely result in geographically organized peer groups, optimized for network latency. This efficient grouping of peers will achieve higher throughput requiring fewer regions and zones.
 
-===Segmentation and Aggregation===
-Currently, transactions are shared and propagated across most blockchain networks through a gossip protocol. Nodes select an arbitrary number of peers within the network and share newly received transactions with their selected peers. Each transaction that a node receives is broadcast to all peers even if they have already received the transaction.  This creates a large network bandwidth requirement simply for the network to propagate transactions. The inefficiency in bandwidth usage is due to the fact that a transaction has to be transmitted for a node to determine if it is new.  Therefore, if a node already has seen a transaction, the full bandwidth must be expended to determine that the transaction does not need to be transmitted. Transactions must be propagated for the nodes to create a consistent set of transactions to validate and include in the next block.  In Bitcoin, the bandwidth overhead for a node compared to the amount of data actually included in a block is on the order of 100-300x.  This means that for every 1 Mb of data included in a block, a node needs to send and receive 100-300 Mb of data \cite{Group2015}.  The bandwidth overhead requirement can be reduced if information can be grouped into larger sets.  This can allow peers to exchange identifying information for a data set, say a hash or header, before the peers actually have to transfer the entire data set.  
-\begin{figure}[ht]
-  \centering
-  \includegraphics{PeerToPeerStructure}
-  \caption{a) traditional peer-to-peer network b) self-imposed subdivision of peer-to-peer network.}
-  \label{fig:fig2}
-\end{figure}
-\begin{table}[ht]
- \caption{Bitcoin vs. BlockReduce requirements with increasing block size}
-  \centering
-  \begin{tabular}{lllllllll}
-    \hline
-    \multirow{2}{*}{Characteristic} &
-    \multirow{2}{*}{Scale Factor} &
-    \multicolumn{6}{c}{Block Size (PRIME) (MB)} \\
-    \cmidrule(l){3-9}
-    && 2.5 & 10 & 20 & 40 & 80 & 160 & 320 \\
-    \hline
-    Transaction per Second (TPS) & N & 10 & 40 & 80 & 160 & 320 & 640 & 1280\\
-    
-    Transactions per Block & N & 10 & 40 & 80 & 160 & 320 & 640 & 1280 \\
-    
-    Storage per year (Gb) & N & 75 & 300 & 600 & 1200 & 2400 & 2800 & 9600 \\
-    
-    Average Bandwidth (kB/s) & N & 250 & 1000 & 2000 & 4000 & 8000 & 160000 & 32000 \\
-    
-    Yearly Traffic (Tb) & N & 7.3 & 29.4 & 58.7 & 117.5 & 235 & 670 & 940 \\
-    
-    BR Average Bandwidth (kb/s) &  k + N/100 & 250 & 760 & 770 & 790 & 830 & 910 & 1070 \\
-    
-    BR Yearly Traffic (Tb) & k + N/100 & 7.3 & 22.3 & 22.6 & 23.2 & 24.4 & 26.7 & 31.4 \\
-    
-    BR Bandwidth Comparison (\%) & n/a & 100\% & 76\% & 38.5\% & 19.8\% & 10.4\% & 5.7\% & 3.3\% \\
-    \hline
-  \end{tabular}
-    \label{tab:table1}
-\end{table}
-
-
-Functionally, this means that if a mechanism can be constructed that incentivizes peers to share information with a subset of their peers as blocks of data rather than individual transactions, a significant increase in bandwidth efficiency can be achieved. For example, Figure 2(a) illustrates a traditional peer-to-peer architecture currently used by blockchain systems.  Since each node does not know what transactions have been received by its peers, it must pass every new transaction it receives to each of its peers.  However, if the network is subdivided into sub-groups, as in figure 2(b), the peers would only share the individual transactions with other peers within their sub-group.  Specifically, nodes which self-identify as A would only share single transactions with other nodes which also self-identify as A.  The same would also be true for nodes which self-identify as sub-group B.  At some point, once a set of transactions is consistent within sub-group A, sub-group A would share that set of transactions with sub-group B.  Now that the transactions are built up into larger groups of data, say hundreds or thousands of transactions, nodes can first check if they need to transmit data to their peers by checking a hash.  This enables a significant increase in bandwidth efficiency. Transmitting a hash would only take tens of bytes, but would allow the nodes to determine if they need to transmit several kilobytes of transaction data. The next question that arises is how would nodes self-organize and then how do zones determine when to share data with other zones.  Table 1 shows a comparison on the bandwidth and storage requirements for a Bitcoin style blockchain versus a BlockReduce style blockchain for various block sizes.  The most notable item is that the scale factor for BlockReduce bandwidth is k+N/100, compared to N for Bitcoin.  The large reduction in the BlockReduce bandwidth scale factor is what enables BlockReduce to massively scale.
-
 
 ===Merge-Mining and Difficulty===
 A key aspect of BlockReduce is all nodes will mine at the zone, region, and PRIME level at the same time. The simultaneous mining of PRIME, regions, and zones allows BlockReduce to keep the entire network's proof-of-work on PRIME. Incremental work via region and zone blocks also allows work to act as a mechanism to determine consistency within regions and zones.  Simultaneous mining is accomplished using the well-known idea of merge-mining.  When a node is mining a transaction, it will include not only a block reward transaction for the PRIME block but will also include a block-reward transaction for the region and zone block. The difficulty of the region and zones are set such that many zone blocks will be found inside of each region block and many region blocks will be found inside each PRIME block. Difficulty for region blocks is set to some fraction of the PRIME difficulty and zone blocks to some fraction of the region difficulty.  For example, as illustrated in Figure 2, the difficulty of PRIME is set to 1,000 and the region and zone difficulties are 100, and 10, respectively.  This creates a system where \textasciitilde10 zone blocks will be found for each region block and \textasciitilde10 region blocks will be found for every PRIME block.  The ratio of difficulty from one level to the next in the hierarchy does not necessarily need to be 10, but it is used here for illustrative purposes.
@@ -146,36 +104,109 @@ The transaction location requirement for BlockReduce will incentivize users to s
 ===Block Header Structure===
 In the proposed block structure, a zone block, a region block, and a PRIME block’s data look apparently identical.  This allows for merge-mining to be used to mine zone, region, and PRIME blocks simultaneously.  The characteristic that distinguishes a zone, region, and PRIME block is the level of difficulty achieved when a block is mined.  The difficulty of the zone will be roughly one order of magnitude easier than a region block which will be roughly one order of magnitude easier than a PRIME block.  Consequently, some of the data that is recorded in a zone block is not useful in the canonical record.    
 
-\begin{table}[ht]
- \caption{A proposed block header structure to implement BlockReduce}
-  \centering
-  \begin{tabular}{llll}
-    \hline
-    Field Size & Name & Data Type & Description\\
-    \hline
-    4 & Version & uint32 & Block version information\\
-32 & parentPrime & char[32] & The hash value of the previous parent block\\
-32 & parentRegion & char[32] & The hash value of the previous region block\\
-32 & parentZone & char[32] & The hash value of the previous zone block\\
-32 & merkleRootPrime & char[32] & Merkle root of all PRIME transactions\\
-32 & merkleRootRegion & char[32] & Merkle root of all region transactions\\
-32 & merkleRootZone & char[32] & Merkle root of all zone transactions\\
-32 & merkleRootInterlink & char[32] & Merkle root interlink enabling proof compression\\
-4 & unixTime & uint32 & Current time in seconds\\
-4 & bitsPrime & uint32 & Current PRIME difficulty in compact form\\
-4 & bitsRegion & uint32 & Current region difficulty in compact form\\
-4 & bitsZone & uint32 & Current zone difficulty in compact form\\
-8 & feesRegion & uint64 & Total transaction fees included in region block\\
-8 & feesZone & uint64 & Total transaction fees included in a zone block\\
-1 & mapRegion & uint8 & Current valid number of regions\\
-1 & mapZone & uint8 & Current valid number of zones\\
-1 & locationRegion & uint8 & Region where block is mined\\
-1 & locationZone & uint8 & Zone where block is mined\\
-8 & nonce & uint64 & Block nonce\\
-    \hline
-  \end{tabular}
-    \label{tab:table2}
-\end{table}
+{| class="wikitable"
+|+ A proposed block header structure to implement BlockReduce}
+|-
+! Field Size
+! Name
+! Data Type
+! Description
+|-
+| 4
+| Version
+| uint32
+| Block version information
+|-
+| 32 
+| parentPrime 
+| char[32] 
+| The hash value of the previous parent block
+|-
+| 32 
+| parentRegion 
+| char[32] 
+| The hash value of the previous region block
+|-
+| 32
+| parentZone
+| char[32] 
+| The hash value of the previous zone block
+|-
+| 32 
+| merkleRootPrime 
+| char[32] 
+| Merkle root of all PRIME transactions
+|-
+| 32 
+| merkleRootRegion 
+| char[32] 
+| Merkle root of all region transactions
+|-
+| 32 
+| merkleRootZone 
+| char[32] 
+| Merkle root of all zone transactions
+|-
+|32 
+| merkleRootInterlink 
+| char[32] 
+| Merkle root interlink enabling proof compression
+|-
+| 4 
+| unixTime 
+| uint32 
+| Current time in seconds
+|-
+| 4 
+| bitsPrime 
+| uint32 
+| Current PRIME difficulty in compact form
+|-
+| 4 
+| bitsRegion 
+| uint32 
+| Current region difficulty in compact form
+|-
+| 4 
+| bitsZone 
+| uint32 
+| Current zone difficulty in compact form
+|-
+| 8 
+| feesRegion 
+| uint64 
+| Total transaction fees included in region block
+|-
+| 8 
+| feesZone 
+| uint64 
+| Total transaction fees included in a zone block
+|-
+| 1 
+| mapRegion 
+| uint8 
+| Current valid number of regions
+|-
+| 1 
+| mapZone 
+| uint8 
+| Current valid number of zones
+|-
+| 1 
+| locationRegion 
+| uint8 
+| Region where block is mined
+|-
+| 1 
+| locationZone 
+| uint8 
+| Zone where block is mined
+|-
+|8 
+| nonce 
+| uint64 
+| Block nonce
+|}
 
 
 Specifically, if a zone block is found, any PRIME Merkle Root Hash (MRH), PRIME TX, region MRH, and region TX are data which have not yet reached consensus.  Therefore, the record of that data will be different in both order in structure relative to the data which is ultimately recorded in the canonical ledger.  However, the recorded hashes are not completely wasted.  They provide a mechanism to validate data sets shared with peer regions and peer zones when a region or zone block is found.  When a zone block is found, the zone block containing zone MRH as well as data which has equivalent or higher scope will be shared with peer zones.  This includes transactions which have region or PRIME scope which are represented by the region MRH and the PRIME MRH included in the zone block.  The peer zones will then check the shared data (i.e. region and PRIME TX’s) and append it to their working block. 
@@ -211,6 +242,8 @@ Locating UTXOs allows further sharding of the node functions, specifically trans
 
 In the protocol where data sharding is allowed, the ability of the chain to deal with 51% attacks must be discussed.   In the example in which there are 10 regions and 10 zones in each region, each zone will only have 1% of the total hash power of the network.  If an attacker was able to achieve 0.6% of the total hash power and nefariously direct it within a single zone, they would represent 60% of the zone hash power and be able to pass nefarious zone block hashes into region blocks.  However, the protocol already has a mechanism by which this type of attack will self-correct.  If 60% of a zone attempts to pass a nefarious block into the region, the honest 40% of the zone hash-power will fork with the malicious 60%.  The zone will begin publishing blocks at the region level that have significantly lower total hash-power than the other zones. Nodes in the other zones will be incentivized to move some of their hash power from their current zone to the one with less effective hash power.  As new honest nodes move to the zone, they will decide to mine the honest fork with 40% of the hash power.  Over time, the fork with 40% will garner more hash power and will become the canonical record of transactions.  Furthermore, the incentive exists for nodes in other zones to monitor topologically adjacent zones to determine when a fork-induced arbitrage opportunity exists. It is not a requirement for zones to monitor adjacent zones, however validating adjacent zone blocks significantly de-risks nodes from working on incorrect blocks. Even if a zone node does not want to persist state or validate transactions from adjacent zone blocks, a node has some assurance on the block validity due to the work performed on the block. The more hash power that a node controls, the greater the economic incentive will be for them to validate more transactions and maintain a greater amount of state. The incentive of the miners to auto balance load across the zones and regions will work to mitigate 51% reversal attacks within zones on locally consistent transactions.
 
+==Conclusion==
+Scaling blockchains to handle a large number of transactions without compromising the inherent characteristics which allow them to function as money is a critical problem.  BlockReduce proposes a novel PoW managed hierarchy of highly structured, merge-mined chains which can efficiently scale blockchain TPS by more than 3 orders of magnitude. This enables a performant blockchain which is also verifiable, fault tolerant, and economically sustainable.  Interestingly, the structure proposed here is a direct acyclic graph which uses incentives to maintain a high degree of symmetry.  Although it is possible to use other graph topologies, symmetry is likely a requirement to maintain fungibility.  
 
 ==Acknowledgements==
 
